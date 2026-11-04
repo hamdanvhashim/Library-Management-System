@@ -1,0 +1,29 @@
+{
+    "books": [
+        {
+            "id": 1,
+            "title": "Python Programming",
+            "author": "John Smith",
+            "category": "Programming",
+            "quantity": 5,
+            "available": 5
+        },
+        {
+            "id": 2,
+            "title": "Data Science",
+            "author": "David Miller",
+            "category": "Technology",
+            "quantity": 3,
+            "available": 3
+        },
+        {
+            "id": 3,
+            "title": "Database Management",
+            "author": "James Brown",
+            "category": "Education",
+            "quantity": 4,
+            "available": 4
+        }
+    ],
+    "issued_books": []
+}
