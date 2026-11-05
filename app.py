@@ -1,16 +1,12 @@
-#Importing libraries
 
+# IMPORTING LIBRARIES
 
 import streamlit as st
 import json
 import os
 
 
-
-
-#Page configuration
-
-
+# PAGE CONFIGURATION
 
 st.set_page_config(
     page_title="Library Management System",
@@ -19,8 +15,87 @@ st.set_page_config(
 )
 
 
-#json file handling
+# THEME MANAGEMENT
 
+if "theme" not in st.session_state:
+    st.session_state.theme = "Light"
+
+if "menu" not in st.session_state:
+    st.session_state.menu = "Dashboard"
+
+
+# THEME BUTTONS
+
+st.sidebar.title("🎨 Appearance")
+
+col1, col2 = st.sidebar.columns(2)
+
+with col1:
+    if st.button("☀️ Light", use_container_width=True):
+        st.session_state.theme = "Light"
+
+with col2:
+    if st.button("🌙 Dark", use_container_width=True):
+        st.session_state.theme = "Dark"
+
+
+# APPLYING THEME
+
+if st.session_state.theme == "Dark":
+
+    st.markdown("""
+    <style>
+    .stApp {
+        background-color: #121212;
+        color: white;
+    }
+
+    [data-testid="stSidebar"] {
+        background-color: #1e1e1e;
+    }
+
+    [data-testid="stMetric"] {
+        background-color: #252525;
+        padding: 20px;
+        border-radius: 12px;
+    }
+
+    h1, h2, h3, p, label {
+        color: white !important;
+    }
+
+    </style>
+    """, unsafe_allow_html=True)
+
+else:
+
+    st.markdown("""
+    <style>
+    .stApp {
+        background-color: #f4f7fb;
+        color: #1e293b;
+    }
+
+    [data-testid="stSidebar"] {
+        background-color: #e8eef7;
+    }
+
+    [data-testid="stMetric"] {
+        background-color: white;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #dbe3ef;
+    }
+
+    h1, h2, h3, p {
+        color: #1e293b;
+    }
+
+    </style>
+    """, unsafe_allow_html=True)
+
+
+# JSON FILE HANDLING
 
 FILE_NAME = "library.json"
 
@@ -49,38 +124,56 @@ def save_data(data):
 data = load_data()
 
 
-
-
-#application title and sidebar
-
-
+# APPLICATION TITLE
 
 st.title("📚 Library Management System")
 
-st.sidebar.title("Navigation")
+st.caption("A smarter and simpler way to manage your library")
 
-menu = st.sidebar.selectbox(
-    "Select an Option",
-    [
-        "Dashboard",
-        "Add Books",
-        "View Books",
-        "Search Books",
-        "Issue Books",
-        "Return Books",
-        "Delete Books"
-    ]
-)
+st.sidebar.title("📚 Navigation")
 
 
+# NAVIGATION BUTTONS
 
-#Dashboard
+menu_options = [
+    "Dashboard",
+    "Add Books",
+    "View Books",
+    "Search Books",
+    "Issue Books",
+    "Return Books",
+    "Delete Books"
+]
+
+for option in menu_options:
+
+    if st.sidebar.button(
+        option,
+        use_container_width=True,
+        type="primary" if st.session_state.menu == option else "secondary"
+    ):
+
+        st.session_state.menu = option
+        st.rerun()
 
 
+menu = st.session_state.menu
+
+
+# DASHBOARD
 
 if menu == "Dashboard":
 
-    st.header("Library Dashboard")
+    st.header("🏠 Library Dashboard")
+
+    st.write("Welcome to your Library Management System!")
+
+    st.write(
+        "Manage books, students and borrowing activities "
+        "easily through one platform."
+    )
+
+    st.divider()
 
     total_books = sum(
         book["quantity"] for book in data["books"]
@@ -95,28 +188,108 @@ if menu == "Dashboard":
         for book in data["books"]
     )
 
-    col1, col2, col3 = st.columns(3)
+    total_titles = len(data["books"])
 
-    col1.metric("Total Books", total_books)
+    # METRIC CARDS
 
-    col2.metric("Available Books", available_books)
+    col1, col2, col3, col4 = st.columns(4)
 
-    col3.metric("Issued Books", issued_books)
-
-    st.subheader("Welcome to Library Management System")
-
-    st.write(
-        "Manage your library books, students and borrowing activities easily."
+    col1.metric(
+        "📚 Total Copies",
+        total_books
     )
 
+    col2.metric(
+        "✅ Available Copies",
+        available_books
+    )
+
+    col3.metric(
+        "📖 Issued Copies",
+        issued_books
+    )
+
+    col4.metric(
+        "📑 Total Titles",
+        total_titles
+    )
+
+    st.divider()
+
+    # DASHBOARD INFORMATION
+
+    st.subheader("📊 Library Overview")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        st.info(
+            f"📚 Your library contains {total_titles} different book titles."
+        )
+
+        st.success(
+            f"✅ Currently, {available_books} book copies are available."
+        )
+
+    with col2:
+
+        st.warning(
+            f"📖 Currently, {issued_books} book copies are issued."
+        )
+
+        st.info(
+            "💡 Use the navigation buttons to manage your library."
+        )
+
+    st.divider()
+
+    st.subheader("🚀 Quick Actions")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+
+        if st.button("➕ Add New Book", use_container_width=True):
+
+            st.session_state.menu = "Add Books"
+            st.rerun()
+
+    with col2:
+
+        if st.button("📖 View All Books", use_container_width=True):
+
+            st.session_state.menu = "View Books"
+            st.rerun()
+
+    with col3:
+
+        if st.button("🔍 Search Books", use_container_width=True):
+
+            st.session_state.menu = "Search Books"
+            st.rerun()
 
 
-#Adding books 
-
+# ADD BOOKS
 
 elif menu == "Add Books":
 
-    st.header("Add New Book")
+    st.header("➕ Add New Book")
+
+    categories = [
+        "Fiction",
+        "Non-Fiction",
+        "Science",
+        "Technology",
+        "History",
+        "Biography",
+        "Mathematics",
+        "Literature",
+        "Computer Science",
+        "Education",
+        "Reference",
+        "Other"
+    ]
 
     with st.form("add_book_form"):
 
@@ -130,7 +303,10 @@ elif menu == "Add Books":
 
         author = st.text_input("Author Name")
 
-        category = st.text_input("Category")
+        category = st.selectbox(
+            "Select Book Category",
+            categories
+        )
 
         quantity = st.number_input(
             "Quantity",
@@ -138,15 +314,21 @@ elif menu == "Add Books":
             step=1
         )
 
-        submit = st.form_submit_button("Add Book")
+        submit = st.form_submit_button(
+            "➕ Add Book",
+            use_container_width=True
+        )
 
         if submit:
 
-            if not title or not author or not category:
+            if not title or not author:
 
                 st.error("Please fill all the fields.")
 
-            elif any(book["id"] == book_id for book in data["books"]):
+            elif any(
+                book["id"] == book_id
+                for book in data["books"]
+            ):
 
                 st.error("Book ID already exists.")
 
@@ -168,21 +350,18 @@ elif menu == "Add Books":
                 st.success("Book added successfully!")
 
 
-
-
-#View books 
-
-
+# VIEW BOOKS
 
 elif menu == "View Books":
 
-    st.header("All Library Books")
+    st.header("📚 All Library Books")
 
     if data["books"]:
 
         st.dataframe(
             data["books"],
-            use_container_width=True
+            use_container_width=True,
+            hide_index=True
         )
 
     else:
@@ -190,16 +369,15 @@ elif menu == "View Books":
         st.warning("No books available.")
 
 
-
-#Search books
-
-
+# SEARCH BOOKS
 
 elif menu == "Search Books":
 
-    st.header("Search Books")
+    st.header("🔍 Search Books")
 
-    search = st.text_input("Enter Book Title, Author or ID")
+    search = st.text_input(
+        "Enter Book Title, Author or ID"
+    )
 
     if search:
 
@@ -217,21 +395,24 @@ elif menu == "Search Books":
 
         if results:
 
-            st.dataframe(results, use_container_width=True)
+            st.success(f"{len(results)} matching book(s) found.")
+
+            st.dataframe(
+                results,
+                use_container_width=True,
+                hide_index=True
+            )
 
         else:
 
             st.warning("No matching books found.")
 
 
-
-#Issue books
-
-
+# ISSUE BOOKS
 
 elif menu == "Issue Books":
 
-    st.header("Issue Books")
+    st.header("📖 Issue Books")
 
     available_books = [
         book for book in data["books"]
@@ -256,7 +437,7 @@ elif menu == "Issue Books":
                 list(book_options.keys())
             )
 
-            submit = st.form_submit_button("Issue Book")
+            submit = st.form_submit_button("📖 Issue Book")
 
             if submit:
 
@@ -275,10 +456,15 @@ elif menu == "Issue Books":
                             book["available"] -= 1
 
                             data["issued_books"].append({
+
                                 "student_name": student_name,
+
                                 "student_id": student_id,
+
                                 "book_id": book_id,
+
                                 "book_title": book["title"]
+
                             })
 
                             save_data(data)
@@ -292,34 +478,25 @@ elif menu == "Issue Books":
         st.warning("No books available for issuing.")
 
 
-
-
-
-#Return books
-
-
+# RETURN BOOKS
 
 elif menu == "Return Books":
 
-    st.header("Return Books")
+    st.header("↩️ Return Books")
 
     if data["issued_books"]:
 
-        for index, issued in enumerate(data["issued_books"]):
-
-            st.write(
-                f'{issued["student_name"]} - {issued["book_title"]}'
-            )
-
         selected = st.selectbox(
             "Select Issued Book",
+
             range(len(data["issued_books"])),
+
             format_func=lambda i:
             f'{data["issued_books"][i]["student_name"]} - '
             f'{data["issued_books"][i]["book_title"]}'
         )
 
-        if st.button("Return Book"):
+        if st.button("↩️ Return Book"):
 
             returned_book = data["issued_books"].pop(selected)
 
@@ -342,15 +519,11 @@ elif menu == "Return Books":
         st.warning("No issued books to return.")
 
 
-
-
-#Delete books
-
-
+# DELETE BOOKS
 
 elif menu == "Delete Books":
 
-    st.header("Delete Books")
+    st.header("🗑️ Delete Books")
 
     if data["books"]:
 
@@ -364,7 +537,7 @@ elif menu == "Delete Books":
             list(book_options.keys())
         )
 
-        if st.button("Delete Book"):
+        if st.button("🗑️ Delete Book"):
 
             book_id = book_options[selected_book]
 
@@ -395,3 +568,4 @@ elif menu == "Delete Books":
     else:
 
         st.warning("No books available to delete.")
+
