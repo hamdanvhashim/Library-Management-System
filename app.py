@@ -47,6 +47,20 @@ def save_data(data):
 data = load_data()
 
 
+# -------------------- OVERVIEW BOX (always white text) --------------------
+def overview_box(text, color):
+    st.markdown(
+        f"""
+        <div style="background-color:{color}; color:#FFFFFF; padding:14px 16px;
+                    border-radius:10px; margin-bottom:12px;
+                    font-family:'Inter', sans-serif; font-size:0.95rem;">
+            {text}
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
 # -------------------- SESSION STATE --------------------
 # Any old saved value (e.g. "Warm Beige") falls back to Light.
 if st.session_state.get("theme") not in ("Light", "Dark"):
@@ -267,12 +281,12 @@ if menu == "Dashboard":
     info_col1, info_col2 = st.columns(2)
 
     with info_col1:
-        st.info(f"📚 Your library contains {total_titles} different book titles.")
-        st.success(f"✅ Currently, {available_count} book copies are available.")
+        overview_box(f"📚 Your library contains {total_titles} different book titles.", "#1D4ED8")
+        overview_box(f"✅ Currently, {available_count} book copies are available.", "#15803D")
 
     with info_col2:
-        st.warning(f"📖 Currently, {issued_count} book copies are issued.")
-        st.info(f"✍️ {len(data['authors'])} authors are saved in your library.")
+        overview_box(f"📖 Currently, {issued_count} book copies are issued.", "#B45309")
+        overview_box(f"✍️ {len(data['authors'])} authors are saved in your library.", "#1D4ED8")
 
 
 # -------------------- ADD BOOKS --------------------
