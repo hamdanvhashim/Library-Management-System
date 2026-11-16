@@ -49,10 +49,63 @@ data = load_data()
 
 # -------------------- SESSION STATE --------------------
 if "theme" not in st.session_state:
-    st.session_state.theme = "Warm Beige"
+    st.session_state.theme = "Light"
 
 if "menu" not in st.session_state:
     st.session_state.menu = "Dashboard"
+
+
+# -------------------- FONTS + BUTTON STYLE (both themes) --------------------
+# Font order:
+#   Headings, metric numbers, buttons -> Poppins
+#   Body text, labels, inputs, tables -> Inter
+st.markdown(
+    """
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap');
+
+    /* Body text */
+    .stApp, .stApp p, .stApp li, .stApp label, .stApp input,
+    .stApp textarea, .stApp select,
+    .stApp [data-testid="stMarkdownContainer"],
+    .stApp [data-testid="stCaptionContainer"],
+    .stApp [data-testid="stMetricLabel"],
+    .stApp [data-testid="stDataFrame"],
+    .stApp [data-testid="stAlert"] {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.95rem;
+    }
+
+    /* Headings: title > header > subheader */
+    .stApp h1 { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 2.2rem; }
+    .stApp h2 { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 1.6rem; }
+    .stApp h3 { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 1.25rem; }
+    .stApp h4 { font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 1.05rem; }
+
+    /* Metric numbers */
+    .stApp [data-testid="stMetricValue"] {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+    }
+
+    /* Caption under the title */
+    .stApp [data-testid="stCaptionContainer"] { font-size: 0.9rem; opacity: 0.8; }
+
+    /* Short, compact buttons instead of long rectangles */
+    div.stButton > button,
+    div.stFormSubmitButton > button {
+        width: auto;
+        min-height: 0;
+        padding: 0.35rem 1rem;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        font-size: 0.85rem;
+        border-radius: 999px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 
 # -------------------- THEME BUTTONS --------------------
@@ -60,17 +113,18 @@ st.sidebar.title("🎨 Appearance")
 theme_col1, theme_col2 = st.sidebar.columns(2)
 
 with theme_col1:
-    if st.button("🤎 Beige", use_container_width=True):
-        st.session_state.theme = "Warm Beige"
+    if st.button("☀️ Light"):
+        st.session_state.theme = "Light"
         st.rerun()
 
 with theme_col2:
-    if st.button("🌙 Dark", use_container_width=True):
+    if st.button("🌙 Dark"):
         st.session_state.theme = "Dark"
         st.rerun()
 
 
 # -------------------- APPLY THEME --------------------
+# Light = normal Streamlit look (no custom colours).
 if st.session_state.theme == "Dark":
     st.markdown(
         """
@@ -85,37 +139,11 @@ if st.session_state.theme == "Dark":
         [data-testid="stMetricValue"] { color: #F5EBDD !important; }
         div.stButton > button, div.stFormSubmitButton > button {
             background-color: #A78355; color: white;
-            border: 1px solid #A78355; border-radius: 8px;
+            border: 1px solid #A78355;
         }
         div.stButton > button:hover, div.stFormSubmitButton > button:hover {
             background-color: #896B45; color: white; border-color: #896B45;
         }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-else:
-    st.markdown(
-        """
-        <style>
-        .stApp { background-color: #F5EFE6; color: #40352B; }
-        [data-testid="stSidebar"] { background-color: #E9DDCC; }
-        [data-testid="stMetric"] {
-            background-color: #FFF9F0; border: 1px solid #DCCBB5;
-            padding: 18px; border-radius: 12px;
-        }
-        h1, h2, h3, h4, p, label, [data-testid="stMetricLabel"],
-        [data-testid="stMetricValue"] { color: #40352B !important; }
-        div.stButton > button, div.stFormSubmitButton > button {
-            background-color: #92734F; color: white;
-            border: 1px solid #92734F; border-radius: 8px;
-        }
-        div.stButton > button:hover, div.stFormSubmitButton > button:hover {
-            background-color: #765A3D; color: white; border-color: #765A3D;
-        }
-        div[data-baseweb="input"] input, div[data-baseweb="select"] > div,
-        textarea { background-color: #FFFCF7; }
-        hr { border-color: #DCCBB5; }
         </style>
         """,
         unsafe_allow_html=True
@@ -143,7 +171,6 @@ menu_options = [
 for option in menu_options:
     if st.sidebar.button(
         option,
-        use_container_width=True,
         type="primary" if st.session_state.menu == option else "secondary"
     ):
         st.session_state.menu = option
@@ -155,9 +182,26 @@ menu = st.session_state.menu
 # -------------------- DASHBOARD --------------------
 if menu == "Dashboard":
     st.header("🏠 Library Dashboard")
+
+    # ---------- QUICK ACTIONS (now at the top) ----------
+    st.subheader("🚀 Quick Actions")
+    quick_actions = [
+        ("➕ Add Book", "Add Books"),
+        ("📖 View Books", "View Books"),
+        ("🔍 Search", "Search Books"),
+        ("📤 Issue", "Issue Books"),
+        ("↩️ Return", "Return Books"),
+    ]
+    action_cols = st.columns(len(quick_actions))
+    for col, (label, target) in zip(action_cols, quick_actions):
+        with col:
+            if st.button(label, key=f"quick_{target}"):
+                st.session_state.menu = target
+                st.rerun()
+
+    st.divider()
     st.write("Welcome to your Library Management System!")
     st.write("Manage books and borrowing activities easily through one platform.")
-    st.divider()
 
     total_books = sum(int(book.get("quantity", 0)) for book in data["books"])
     available_count = sum(int(book.get("available", 0)) for book in data["books"])
@@ -184,25 +228,6 @@ if menu == "Dashboard":
     with info_col2:
         st.warning(f"📖 Currently, {issued_count} book copies are issued.")
         st.info(f"✍️ {len(data['authors'])} authors are saved in your library.")
-
-    st.divider()
-    st.subheader("🚀 Quick Actions")
-    action_col1, action_col2, action_col3 = st.columns(3)
-
-    with action_col1:
-        if st.button("➕ Add New Book", use_container_width=True):
-            st.session_state.menu = "Add Books"
-            st.rerun()
-
-    with action_col2:
-        if st.button("📖 View All Books", use_container_width=True):
-            st.session_state.menu = "View Books"
-            st.rerun()
-
-    with action_col3:
-        if st.button("🔍 Search Books", use_container_width=True):
-            st.session_state.menu = "Search Books"
-            st.rerun()
 
 
 # -------------------- ADD BOOKS --------------------
@@ -239,7 +264,7 @@ elif menu == "Add Books":
         category = st.selectbox("Select Book Category", categories)
         quantity = st.number_input("Quantity", min_value=1, step=1)
 
-        submit = st.form_submit_button("➕ Add Book", use_container_width=True)
+        submit = st.form_submit_button("➕ Add Book")
 
         if submit:
             author_name = author_name.strip()
@@ -320,7 +345,7 @@ elif menu == "Issue Books":
             student_name = st.text_input("Student Name")
             student_id = st.text_input("Student ID")
             selected_book = st.selectbox("Select Book", list(book_options.keys()))
-            submit = st.form_submit_button("📖 Issue Book", use_container_width=True)
+            submit = st.form_submit_button("📖 Issue Book")
 
             if submit:
                 if not student_name.strip() or not student_id.strip():
@@ -361,7 +386,7 @@ elif menu == "Return Books":
             )
         )
 
-        if st.button("↩️ Return Book", use_container_width=True):
+        if st.button("↩️ Return Book"):
             returned_book = data["issued_books"].pop(selected_index)
 
             for book in data["books"]:
@@ -391,7 +416,7 @@ elif menu == "Delete Books":
             list(book_options.keys())
         )
 
-        if st.button("🗑️ Delete Book", use_container_width=True):
+        if st.button("🗑️ Delete Book"):
             selected_id = book_options[selected_book]
 
             is_issued = any(
