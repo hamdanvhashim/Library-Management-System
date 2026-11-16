@@ -125,21 +125,26 @@ with theme_col2:
 
 
 # -------------------- APPLY THEME --------------------
-# Light theme: black buttons.  Dark theme: white buttons.
+# Light theme: black text, black buttons.
+# Dark theme:  white text, white buttons.
 if st.session_state.theme == "Dark":
     st.markdown(
         """
         <style>
-        .stApp { background-color: #0E1117; color: #E5E7EB; }
+        .stApp { background-color: #0E1117; color: #FFFFFF; }
         [data-testid="stSidebar"] { background-color: #1A1D24; }
         [data-testid="stMetric"] {
             background-color: #1F2430; border: 1px solid #2E3440;
             padding: 18px; border-radius: 12px;
         }
-        h1, h2, h3, h4, p, label, [data-testid="stMetricLabel"],
-        [data-testid="stMetricValue"] { color: #E5E7EB !important; }
+
+        /* White text */
+        h1, h2, h3, h4, p, li, label, [data-testid="stCaptionContainer"],
+        [data-testid="stMetricLabel"], [data-testid="stMetricValue"] {
+            color: #FFFFFF !important;
+        }
         div[data-baseweb="input"] input, div[data-baseweb="select"] > div,
-        textarea { background-color: #1F2430; color: #E5E7EB; }
+        textarea { background-color: #1F2430; color: #FFFFFF; }
 
         /* White buttons with black text */
         div.stButton > button, div.stFormSubmitButton > button {
@@ -159,14 +164,20 @@ else:
     st.markdown(
         """
         <style>
-        .stApp { background-color: #FFFFFF; color: #1F2937; }
+        .stApp { background-color: #FFFFFF; color: #000000; }
         [data-testid="stSidebar"] { background-color: #F3F4F6; }
         [data-testid="stMetric"] {
             background-color: #F9FAFB; border: 1px solid #E5E7EB;
             padding: 18px; border-radius: 12px;
         }
-        h1, h2, h3, h4, p, label, [data-testid="stMetricLabel"],
-        [data-testid="stMetricValue"] { color: #1F2937 !important; }
+
+        /* Black text */
+        h1, h2, h3, h4, p, li, label, [data-testid="stCaptionContainer"],
+        [data-testid="stMetricLabel"], [data-testid="stMetricValue"] {
+            color: #000000 !important;
+        }
+        div[data-baseweb="input"] input, div[data-baseweb="select"] > div,
+        textarea { color: #000000; }
 
         /* Black buttons with white text */
         div.stButton > button, div.stFormSubmitButton > button {
