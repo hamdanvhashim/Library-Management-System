@@ -48,14 +48,15 @@ data = load_data()
 
 
 # -------------------- SESSION STATE --------------------
-if "theme" not in st.session_state:
+# Any old saved value (e.g. "Warm Beige") falls back to Light.
+if st.session_state.get("theme") not in ("Light", "Dark"):
     st.session_state.theme = "Light"
 
 if "menu" not in st.session_state:
     st.session_state.menu = "Dashboard"
 
 
-# -------------------- FONTS + BUTTON STYLE (both themes) --------------------
+# -------------------- FONTS + BUTTON SHAPE (both themes) --------------------
 # Font order:
 #   Headings, metric numbers, buttons -> Poppins
 #   Body text, labels, inputs, tables -> Inter
@@ -124,6 +125,7 @@ with theme_col2:
 
 
 # -------------------- APPLY THEME --------------------
+# Light theme: black buttons.  Dark theme: white buttons.
 if st.session_state.theme == "Dark":
     st.markdown(
         """
@@ -138,11 +140,16 @@ if st.session_state.theme == "Dark":
         [data-testid="stMetricValue"] { color: #E5E7EB !important; }
         div[data-baseweb="input"] input, div[data-baseweb="select"] > div,
         textarea { background-color: #1F2430; color: #E5E7EB; }
+
+        /* White buttons with black text */
         div.stButton > button, div.stFormSubmitButton > button {
-            background-color: #3B82F6; color: white; border: 1px solid #3B82F6;
+            background-color: #FFFFFF; color: #000000; border: 1px solid #FFFFFF;
         }
         div.stButton > button:hover, div.stFormSubmitButton > button:hover {
-            background-color: #2563EB; color: white; border-color: #2563EB;
+            background-color: #D1D5DB; color: #000000; border-color: #D1D5DB;
+        }
+        div.stButton > button p, div.stFormSubmitButton > button p {
+            color: #000000 !important;
         }
         </style>
         """,
@@ -160,16 +167,22 @@ else:
         }
         h1, h2, h3, h4, p, label, [data-testid="stMetricLabel"],
         [data-testid="stMetricValue"] { color: #1F2937 !important; }
+
+        /* Black buttons with white text */
         div.stButton > button, div.stFormSubmitButton > button {
-            background-color: #2563EB; color: white; border: 1px solid #2563EB;
+            background-color: #000000; color: #FFFFFF; border: 1px solid #000000;
         }
         div.stButton > button:hover, div.stFormSubmitButton > button:hover {
-            background-color: #1D4ED8; color: white; border-color: #1D4ED8;
+            background-color: #333333; color: #FFFFFF; border-color: #333333;
+        }
+        div.stButton > button p, div.stFormSubmitButton > button p {
+            color: #FFFFFF !important;
         }
         </style>
         """,
         unsafe_allow_html=True
     )
+
 
 # -------------------- APPLICATION TITLE --------------------
 st.title("📚 Library Management System")
@@ -204,7 +217,7 @@ menu = st.session_state.menu
 if menu == "Dashboard":
     st.header("🏠 Library Dashboard")
 
-    # ---------- QUICK ACTIONS (now at the top) ----------
+    # ---------- QUICK ACTIONS (at the top) ----------
     st.subheader("🚀 Quick Actions")
     quick_actions = [
         ("➕ Add Book", "Add Books"),
