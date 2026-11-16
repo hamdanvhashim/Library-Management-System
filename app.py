@@ -124,31 +124,52 @@ with theme_col2:
 
 
 # -------------------- APPLY THEME --------------------
-# Light = normal Streamlit look (no custom colours).
 if st.session_state.theme == "Dark":
     st.markdown(
         """
         <style>
-        .stApp { background-color: #171513; color: #F5EBDD; }
-        [data-testid="stSidebar"] { background-color: #26211C; }
+        .stApp { background-color: #0E1117; color: #E5E7EB; }
+        [data-testid="stSidebar"] { background-color: #1A1D24; }
         [data-testid="stMetric"] {
-            background-color: #302820; border: 1px solid #514333;
+            background-color: #1F2430; border: 1px solid #2E3440;
             padding: 18px; border-radius: 12px;
         }
         h1, h2, h3, h4, p, label, [data-testid="stMetricLabel"],
-        [data-testid="stMetricValue"] { color: #F5EBDD !important; }
+        [data-testid="stMetricValue"] { color: #E5E7EB !important; }
+        div[data-baseweb="input"] input, div[data-baseweb="select"] > div,
+        textarea { background-color: #1F2430; color: #E5E7EB; }
         div.stButton > button, div.stFormSubmitButton > button {
-            background-color: #A78355; color: white;
-            border: 1px solid #A78355;
+            background-color: #3B82F6; color: white; border: 1px solid #3B82F6;
         }
         div.stButton > button:hover, div.stFormSubmitButton > button:hover {
-            background-color: #896B45; color: white; border-color: #896B45;
+            background-color: #2563EB; color: white; border-color: #2563EB;
         }
         </style>
         """,
         unsafe_allow_html=True
     )
-
+else:
+    st.markdown(
+        """
+        <style>
+        .stApp { background-color: #FFFFFF; color: #1F2937; }
+        [data-testid="stSidebar"] { background-color: #F3F4F6; }
+        [data-testid="stMetric"] {
+            background-color: #F9FAFB; border: 1px solid #E5E7EB;
+            padding: 18px; border-radius: 12px;
+        }
+        h1, h2, h3, h4, p, label, [data-testid="stMetricLabel"],
+        [data-testid="stMetricValue"] { color: #1F2937 !important; }
+        div.stButton > button, div.stFormSubmitButton > button {
+            background-color: #2563EB; color: white; border: 1px solid #2563EB;
+        }
+        div.stButton > button:hover, div.stFormSubmitButton > button:hover {
+            background-color: #1D4ED8; color: white; border-color: #1D4ED8;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
 # -------------------- APPLICATION TITLE --------------------
 st.title("📚 Library Management System")
